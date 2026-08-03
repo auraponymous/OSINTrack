@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSINTrack — Référentiel d'outils OSINT</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#060605;
+    --bg-panel:#0c0c0a;
+    --bg-raised:#121210;
+    --paper:#ece7d8;
+    --ink-dim:#8d897c;
+    --ink-faint:#5a5850;
+    --border:#2a2924;
+    --border-bright:#454239;
+    --red:#c4211d;
+    --red-dim:#5c1210;
+    --red-glow:rgba(196,33,29,0.18);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    background:var(--bg);
+    color:var(--paper);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    line-height:1.6;
+    min-height:100vh;
+    position:relative;
+  }
+
+  /* grain / scanline overlay — subtle terminal texture */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none;
+    z-index:999;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.012) 0px,
+      rgba(255,255,255,0.012) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    opacity:0.5;
+  }
+
+  a{color:inherit; text-decoration:none;}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+
+  ::selection{background:var(--red); color:var(--paper);}
+
+  /* ============ MASTHEAD ============ */
+  .masthead{
+    border-bottom:1px solid var(--border);
+    padding:36px 0 28px;
+    background:
+      linear-gradient(180deg, var(--bg-panel) 0%, var(--bg) 100%);
+  }
+  .masthead-inner{
+    display:flex;
+    align-items:center;
+    gap:22px;
+  }
+  .logo{
+    width:56px; height:56px;
+    flex-shrink:0;
+    filter:invert(1) brightness(1.6);
+    opacity:0.95;
+  }
+  .title-block{flex:1; min-width:0;}
+  .eyebrow{
+    font-size:10.5px;
+    letter-spacing:0.22em;
+    color:var(--red);
+    text-transform:uppercase;
+    margin-bottom:6px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:6px; height:6px;
+    background:var(--red);
+    display:inline-block;
+    box-shadow:0 0 6px var(--red);
+    animation:pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1;}
+    50%{opacity:0.25;}
+  }
+  h1{
+    font-family:'Special Elite', monospace;
+    font-size:clamp(28px, 4vw, 42px);
+    letter-spacing:0.02em;
+    color:var(--paper);
+    display:inline-flex;
+    align-items:baseline;
+  }
+  .cursor{
+    display:inline-block;
+    width:0.5em; height:0.85em;
+    background:var(--red);
+    margin-left:6px;
+    animation:blink 1.1s steps(1) infinite;
+    transform:translateY(2px);
+  }
+  @keyframes blink{
+    0%,49%{opacity:1;}
+    50%,100%{opacity:0;}
+  }
+  .tagline{
+    margin-top:8px;
+    color:var(--ink-dim);
+    font-size:13px;
+    font-style:normal;
+  }
+  .tagline::before{content:"// ";color:var(--ink-faint);}
+
+  /* ============ MODE TABS ============ */
+  .mode-tabs{
+    display:flex;
+    border-bottom:1px solid var(--border);
+    background:var(--bg-panel);
+  }
+  .mode-tab{
+    flex:0 0 auto;
+    padding:14px 26px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    background:transparent;
+    border:none;
+    border-right:1px solid var(--border);
+    cursor:pointer;
+    position:relative;
+    transition:color .15s ease, background .15s ease;
+  }
+  .mode-tab .num{color:var(--ink-faint); margin-right:8px;}
+  .mode-tab:hover{color:var(--paper); background:var(--bg-raised);}
+  .mode-tab.active{
+    color:var(--paper);
+    background:var(--bg);
+  }
+  .mode-tab.active .num{color:var(--red);}
+  .mode-tab.active::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:-1px;
+    height:2px; background:var(--red);
+  }
+
+  main{padding:40px 0 80px;}
+  section[hidden]{display:none !important;}
+
+  /* ============ GUIDED MODE ============ */
+  .guided-step{margin-bottom:34px;}
+  .step-label{
+    font-size:11px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin-bottom:12px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .step-label .n{color:var(--red);}
+  .step-label::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--border);
+  }
+  .choice-row{display:flex; flex-wrap:wrap; gap:10px;}
+  .choice-btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    padding:10px 18px;
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    color:var(--paper);
+    cursor:pointer;
+    transition:border-color .15s ease, color .15s ease, background .15s ease;
+    position:relative;
+  }
+  .choice-btn:hover{border-color:var(--border-bright);}
+  .choice-btn.selected{
+    border-color:var(--red);
+    color:var(--paper);
+    background:var(--red-dim);
+  }
+  .choice-btn:disabled{opacity:0.3; cursor:not-allowed;}
+
+  .path-empty{
+    color:var(--ink-dim);
+    border:1px dashed var(--border);
+    padding:24px;
+    font-size:13px;
+  }
+  .path-empty .red{color:var(--red);}
+
+  .dossier{
+    border:1px solid var(--border);
+    background:var(--bg-panel);
+  }
+  .dossier-head{
+    padding:16px 22px;
+    border-bottom:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:8px;
+  }
+  .dossier-head h2{
+    font-family:'Special Elite', monospace;
+    font-size:18px;
+    font-weight:400;
+    color:var(--paper);
+  }
+  .dossier-head .ref{
+    font-size:11px; color:var(--ink-faint); letter-spacing:0.08em;
+  }
+  .path-list{position:relative;}
+  .path-item{
+    display:flex;
+    gap:20px;
+    padding:20px 22px;
+    border-bottom:1px solid var(--border);
+    position:relative;
+  }
+  .path-item:last-child{border-bottom:none;}
+  .path-item .step-num{
+    font-family:'Special Elite', monospace;
+    font-size:22px;
+    color:var(--ink-faint);
+    flex-shrink:0;
+    width:34px;
+    text-align:center;
+  }
+  .path-item-body{flex:1; min-width:0;}
+  .path-item-body .tool-name{
+    font-size:15px;
+    color:var(--paper);
+    margin-bottom:4px;
+  }
+  .path-item-body .tool-name a{
+    color:var(--paper);
+    border-bottom:1px solid transparent;
+  }
+  .path-item-body .tool-name a:hover{
+    color:var(--red);
+    border-bottom-color:var(--red);
+  }
+  .path-item-body .note{
+    color:var(--ink-dim);
+    font-size:13px;
+    line-height:1.55;
+  }
+  .path-item-body .goto-link{
+    display:inline-block;
+    margin-top:8px;
+    font-size:11px;
+    letter-spacing:0.08em;
+    color:var(--red);
+  }
+  .path-item-body .goto-link::after{content:" →";}
+
+  /* ============ EXPLORE MODE ============ */
+  .explore-toolbar{
+    display:flex; flex-direction:column; gap:18px;
+    margin-bottom:28px;
+  }
+  .search-field{
+    position:relative;
+    border:1px solid var(--border);
+    background:var(--bg-panel);
+  }
+  .search-field input{
+    width:100%;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--paper);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    padding:14px 16px;
+  }
+  .search-field input::placeholder{color:var(--ink-faint);}
+  .search-field::before{
+    content:"RECHERCHER_";
+    position:absolute;
+    top:-9px; left:12px;
+    background:var(--bg);
+    padding:0 6px;
+    font-size:10px;
+    letter-spacing:0.14em;
+    color:var(--ink-faint);
+  }
+
+  .filter-groups{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:20px;
+  }
+  .filter-group{border:1px solid var(--border); padding:14px 16px; background:var(--bg-panel);}
+  .filter-group h3{
+    font-size:10.5px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin-bottom:10px;
+  }
+  .chip-row{display:flex; flex-wrap:wrap; gap:6px;}
+  .chip{
+    font-size:11.5px;
+    padding:5px 10px;
+    border:1px solid var(--border);
+    color:var(--ink-dim);
+    cursor:pointer;
+    user-select:none;
+    transition:all .12s ease;
+  }
+  .chip:hover{border-color:var(--border-bright); color:var(--paper);}
+  .chip.active{
+    border-color:var(--red);
+    color:var(--paper);
+    background:var(--red-glow);
+  }
+
+  .results-meta{
+    display:flex; justify-content:space-between; align-items:center;
+    margin:26px 0 14px;
+    font-size:11px; color:var(--ink-faint); letter-spacing:0.06em;
+    border-bottom:1px solid var(--border);
+    padding-bottom:10px;
+  }
+  .results-meta .clear-btn{
+    color:var(--red); cursor:pointer; letter-spacing:0.08em;
+  }
+  .results-meta .clear-btn:hover{text-decoration:underline;}
+
+  .card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));
+    gap:1px;
+    background:var(--border);
+    border:1px solid var(--border);
+  }
+  .card{
+    background:var(--bg-panel);
+    padding:20px;
+    position:relative;
+    transition:background .15s ease;
+  }
+  .card:hover{background:var(--bg-raised);}
+
+  /* reticle corner brackets — signature motif echoing the logo crosshair */
+  .card::before, .card::after,
+  .card .rb1, .card .rb2{
+    content:"";
+    position:absolute;
+    width:10px; height:10px;
+    border-color:var(--red);
+    border-style:solid;
+    opacity:0;
+    transition:opacity .15s ease;
+  }
+  .card::before{top:6px; left:6px; border-width:1px 0 0 1px;}
+  .card::after{top:6px; right:6px; border-width:1px 1px 0 0;}
+  .card .rb1{bottom:6px; left:6px; border-width:0 0 1px 1px;}
+  .card .rb2{bottom:6px; right:6px; border-width:0 1px 1px 0;}
+  .card:hover::before, .card:hover::after,
+  .card:hover .rb1, .card:hover .rb2{opacity:1;}
+
+  .card-meta{
+    display:flex; gap:8px; flex-wrap:wrap;
+    margin-bottom:12px;
+  }
+  .tag-pill{
+    font-size:9.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    padding:3px 7px;
+    border:1px solid var(--border-bright);
+    color:var(--ink-dim);
+  }
+  .tag-pill.free{color:#8fae82; border-color:#3a4a34;}
+  .tag-pill.paid{color:var(--red); border-color:var(--red-dim);}
+
+  .card h3{
+    font-family:'Special Elite', monospace;
+    font-size:16px;
+    font-weight:400;
+    color:var(--paper);
+    margin-bottom:8px;
+  }
+  .card p.desc{
+    color:var(--ink-dim);
+    font-size:12.5px;
+    line-height:1.6;
+    margin-bottom:14px;
+    min-height:56px;
+  }
+  .card .card-footer{
+    display:flex; justify-content:space-between; align-items:center;
+    border-top:1px solid var(--border);
+    padding-top:12px;
+  }
+  .card .open-link{
+    color:var(--red);
+    font-size:11.5px;
+    letter-spacing:0.08em;
+  }
+  .card .open-link::after{content:" →";}
+  .card .open-link:hover{text-decoration:underline;}
+  .card .sub-cat{
+    color:var(--ink-faint);
+    font-size:10.5px;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-dim);
+    border:1px dashed var(--border);
+  }
+
+  .loading{
+    padding:60px 0;
+    text-align:center;
+    color:var(--ink-dim);
+    font-size:13px;
+    letter-spacing:0.06em;
+  }
+  .loading .cursor{background:var(--ink-dim);}
+
+  footer{
+    border-top:1px solid var(--border);
+    padding:22px 0;
+    color:var(--ink-faint);
+    font-size:11px;
+    letter-spacing:0.04em;
+  }
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;}
+
+  @media (max-width: 640px){
+    .masthead-inner{gap:14px;}
+    .logo{width:42px; height:42px;}
+    .mode-tab{padding:12px 14px; font-size:11px;}
+    .path-item{flex-direction:column; gap:8px;}
+    .path-item .step-num{width:auto; text-align:left;}
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap masthead-inner">
+    <img src="logo.png" alt="OSINTrack" class="logo">
+    <div class="title-block">
+      <div class="eyebrow">Référentiel OSINT — accès ouvert</div>
+      <h1>OSINTRACK<span class="cursor"></span></h1>
+      <p class="tagline">Suivez la piste numérique.</p>
+    </div>
+  </div>
+  <nav class="mode-tabs wrap" style="padding-left:0; padding-right:0;">
+    <button class="mode-tab active" data-mode="guided"><span class="num">01</span>Parcours guidé</button>
+    <button class="mode-tab" data-mode="explore"><span class="num">02</span>Explorer</button>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <div id="loading" class="loading">CHARGEMENT DES DONNÉES<span class="cursor"></span></div>
+
+  <!-- ============ MODE 1 : PARCOURS GUIDÉ ============ -->
+  <section id="mode-guided" hidden>
+    <div class="guided-step">
+      <div class="step-label"><span class="n">01</span> Point de départ — qu'avez-vous en main ?</div>
+      <div class="choice-row" id="depart-choices"></div>
+    </div>
+    <div class="guided-step">
+      <div class="step-label"><span class="n">02</span> Objectif — que cherchez-vous à faire ?</div>
+      <div class="choice-row" id="objectif-choices"></div>
+    </div>
+    <div id="guided-result"></div>
+  </section>
+
+  <!-- ============ MODE 2 : EXPLORER ============ -->
+  <section id="mode-explore" hidden>
+    <div class="explore-toolbar">
+      <div class="search-field">
+        <input type="text" id="search-input" placeholder="nom, description, mot-clé...">
+      </div>
+      <div class="filter-groups">
+        <div class="filter-group">
+          <h3>Catégorie</h3>
+          <div class="chip-row" id="filter-categorie"></div>
+        </div>
+        <div class="filter-group">
+          <h3>Objectif</h3>
+          <div class="chip-row" id="filter-type"></div>
+        </div>
+        <div class="filter-group">
+          <h3>Niveau</h3>
+          <div class="chip-row" id="filter-niveau"></div>
+        </div>
+        <div class="filter-group">
+          <h3>Accès</h3>
+          <div class="chip-row" id="filter-gratuit"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-meta">
+      <span id="results-count">0 outil(s)</span>
+      <span class="clear-btn" id="clear-filters">RÉINITIALISER ×</span>
+    </div>
+
+    <div class="card-grid" id="card-grid"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>OSINTRACK — données synchronisées depuis Google Sheets</span>
+    <span>usage éducatif &amp; professionnel — vérifiez toujours la légalité de vos recherches</span>
+  </div>
+</footer>
+
+<script>
+  const SHEET_ID = "1153QUTrpxHcqA0eMtV9PpeBEHGQHz8W8hZcKzvPySXo";
+
+  const OUTILS_HEADERS = ["id","nom","url","categorie","sous_categorie","type_recherche","description","niveau","gratuit","necessite_compte","ordre_recommande","tags"];
+  const PARCOURS_HEADERS = ["parcours_id","point_depart","objectif","etape_num","outil_id","outil_nom","note_etape"];
+
+  let OUTILS = [];
+  let PARCOURS = [];
+
+  const activeFilters = { categorie:new Set(), type_recherche:new Set(), niveau:new Set(), gratuit:new Set() };
+  let searchQuery = "";
+
+  function escapeHtml(str){
+    return String(str ?? "").replace(/[&<>"']/g, s => ({
+      '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+    }[s]));
+  }
+
+  async function fetchSheet(sheetName, fallbackHeaders){
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+    const res = await fetch(url);
+    const text = await res.text();
+    const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+    const json = JSON.parse(jsonStr);
+    const cols = json.table.cols.map((c, i) => c.label && c.label.trim() ? c.label.trim() : fallbackHeaders[i]);
+    return json.table.rows
+      .filter(r => r && r.c)
+      .map(r => {
+        const obj = {};
+        cols.forEach((c, i) => {
+          const cell = r.c[i];
+          obj[c] = cell && cell.v !== null && cell.v !== undefined ? cell.v : "";
+        });
+        return obj;
+      })
+      .filter(o => o.nom || o.parcours_id); // drop fully empty rows
+  }
+
+  function uniqueSorted(arr, key){
+    return [...new Set(arr.map(o => o[key]).filter(Boolean))].sort();
+  }
+
+  /* ============ GUIDED MODE ============ */
+  function renderDepartChoices(){
+    const departs = uniqueSorted(PARCOURS, "point_depart");
+    const container = document.getElementById("depart-choices");
+    container.innerHTML = departs.map(d =>
+      `<button class="choice-btn" data-depart="${escapeHtml(d)}">${escapeHtml(d)}</button>`
+    ).join("");
+    container.querySelectorAll(".choice-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        container.querySelectorAll(".choice-btn").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        state.depart = btn.dataset.depart;
+        state.objectif = null;
+        renderObjectifChoices();
+        renderGuidedResult();
+      });
+    });
+  }
+
+  const state = { depart:null, objectif:null };
+
+  function renderObjectifChoices(){
+    const container = document.getElementById("objectif-choices");
+    if(!state.depart){
+      container.innerHTML = `<button class="choice-btn" disabled>sélectionnez d'abord un point de départ</button>`;
+      return;
+    }
+    const objectifs = uniqueSorted(PARCOURS.filter(p => p.point_depart === state.depart), "objectif");
+    container.innerHTML = objectifs.map(o =>
+      `<button class="choice-btn" data-objectif="${escapeHtml(o)}">${escapeHtml(o)}</button>`
+    ).join("");
+    container.querySelectorAll(".choice-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        container.querySelectorAll(".choice-btn").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        state.objectif = btn.dataset.objectif;
+        renderGuidedResult();
+      });
+    });
+  }
+
+  function renderGuidedResult(){
+    const resultEl = document.getElementById("guided-result");
+    if(!state.depart || !state.objectif){
+      resultEl.innerHTML = "";
+      return;
+    }
+    const steps = PARCOURS
+      .filter(p => p.point_depart === state.depart && p.objectif === state.objectif)
+      .sort((a,b) => Number(a.etape_num) - Number(b.etape_num));
+
+    if(steps.length === 0){
+      resultEl.innerHTML = `<div class="path-empty">Aucun parcours documenté pour cette combinaison pour le moment. <span class="red">→</span> Utilisez le mode <strong>Explorer</strong> pour composer votre propre recherche.</div>`;
+      return;
+    }
+
+    const toolMap = {};
+    OUTILS.forEach(o => toolMap[String(o.id)] = o);
+
+    const itemsHtml = steps.map(s => {
+      const tool = toolMap[String(s.outil_id)];
+      const url = tool ? tool.url : "#";
+      return `
+        <div class="path-item">
+          <div class="step-num">${String(s.etape_num).padStart(2,"0")}</div>
+          <div class="path-item-body">
+            <div class="tool-name"><a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(s.outil_nom)}</a></div>
+            <div class="note">${escapeHtml(s.note_etape)}</div>
+            <a class="goto-link" href="${escapeHtml(url)}" target="_blank" rel="noopener">Accéder à l'outil</a>
+          </div>
+        </div>`;
+    }).join("");
+
+    resultEl.innerHTML = `
+      <div class="dossier">
+        <div class="dossier-head">
+          <h2>${escapeHtml(state.depart)} → ${escapeHtml(state.objectif)}</h2>
+          <span class="ref">DOSSIER Nº ${escapeHtml(steps[0].parcours_id)} — ${steps.length} ÉTAPE(S)</span>
+        </div>
+        <div class="path-list">${itemsHtml}</div>
+      </div>`;
+  }
+
+  /* ============ EXPLORE MODE ============ */
+  function renderFilterGroup(containerId, key, labelFn){
+    const values = uniqueSorted(OUTILS, key);
+    const container = document.getElementById(containerId);
+    container.innerHTML = values.map(v =>
+      `<span class="chip" data-key="${key}" data-value="${escapeHtml(v)}">${escapeHtml(labelFn ? labelFn(v) : v)}</span>`
+    ).join("");
+    container.querySelectorAll(".chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        const k = chip.dataset.key, v = chip.dataset.value;
+        if(activeFilters[k].has(v)){ activeFilters[k].delete(v); chip.classList.remove("active"); }
+        else { activeFilters[k].add(v); chip.classList.add("active"); }
+        renderCards();
+      });
+    });
+  }
+
+  function matchesFilters(o){
+    for(const key of Object.keys(activeFilters)){
+      if(activeFilters[key].size > 0 && !activeFilters[key].has(o[key])) return false;
+    }
+    if(searchQuery){
+      const haystack = `${o.nom} ${o.description} ${o.tags}`.toLowerCase();
+      if(!haystack.includes(searchQuery.toLowerCase())) return false;
+    }
+    return true;
+  }
+
+  function renderCards(){
+    const results = OUTILS.filter(matchesFilters);
+    document.getElementById("results-count").textContent = `${results.length} outil(s)`;
+
+    const grid = document.getElementById("card-grid");
+    if(results.length === 0){
+      grid.innerHTML = "";
+      grid.style.display = "block";
+      grid.innerHTML = `<div class="empty-state">Aucun outil ne correspond à ces critères.<br>Ajustez les filtres ou la recherche.</div>`;
+      return;
+    }
+    grid.style.display = "grid";
+    grid.innerHTML = results.map(o => `
+      <div class="card">
+        <div class="rb1"></div><div class="rb2"></div>
+        <div class="card-meta">
+          <span class="tag-pill">${escapeHtml(o.categorie)}</span>
+          <span class="tag-pill">${escapeHtml(o.niveau)}</span>
+          <span class="tag-pill ${o.gratuit === 'Oui' ? 'free' : (o.gratuit === 'Payant' ? 'paid' : '')}">${escapeHtml(o.gratuit)}</span>
+        </div>
+        <h3>${escapeHtml(o.nom)}</h3>
+        <p class="desc">${escapeHtml(o.description)}</p>
+        <div class="card-footer">
+          <span class="sub-cat">${escapeHtml(o.sous_categorie)}</span>
+          <a class="open-link" href="${escapeHtml(o.url)}" target="_blank" rel="noopener">Ouvrir</a>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  document.getElementById("search-input").addEventListener("input", (e) => {
+    searchQuery = e.target.value;
+    renderCards();
+  });
+
+  document.getElementById("clear-filters").addEventListener("click", () => {
+    Object.keys(activeFilters).forEach(k => activeFilters[k].clear());
+    document.querySelectorAll(".chip.active").forEach(c => c.classList.remove("active"));
+    document.getElementById("search-input").value = "";
+    searchQuery = "";
+    renderCards();
+  });
+
+  /* ============ MODE TABS ============ */
+  document.querySelectorAll(".mode-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".mode-tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      const mode = tab.dataset.mode;
+      document.getElementById("mode-guided").hidden = mode !== "guided";
+      document.getElementById("mode-explore").hidden = mode !== "explore";
+    });
+  });
+
+  /* ============ INIT ============ */
+  async function init(){
+    try{
+      [OUTILS, PARCOURS] = await Promise.all([
+        fetchSheet("outils", OUTILS_HEADERS),
+        fetchSheet("parcours", PARCOURS_HEADERS)
+      ]);
+    } catch(err){
+      document.getElementById("loading").innerHTML =
+        `ERREUR DE CHARGEMENT — vérifiez que le Google Sheet est bien partagé en lecture ("Tous les utilisateurs disposant du lien").`;
+      console.error(err);
+      return;
+    }
+
+    document.getElementById("loading").hidden = true;
+    document.getElementById("mode-guided").hidden = false;
+
+    renderDepartChoices();
+    renderObjectifChoices();
+
+    renderFilterGroup("filter-categorie", "categorie");
+    renderFilterGroup("filter-type", "type_recherche");
+    renderFilterGroup("filter-niveau", "niveau");
+    renderFilterGroup("filter-gratuit", "gratuit");
+    renderCards();
+  }
+
+  init();
+</script>
+
+</body>
+</html>
