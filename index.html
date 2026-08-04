@@ -175,7 +175,7 @@
   }
   .search-tab input::placeholder{color:var(--ink-faint); text-transform:none;}
 
-  main.wrap{padding-top:72px; padding-bottom:80px; flex:1 0 auto;}
+  main{padding-top:72px; padding-bottom:80px; flex:1 0 auto; width:100%;}
   section[hidden]{display:none !important;}
 
   /* ============ WELCOME ============ */
@@ -477,7 +477,8 @@
   </nav>
 </div>
 
-<main class="wrap">
+<main>
+  <div class="wrap">
 
   <div id="loading" class="loading" hidden></div>
 
@@ -534,6 +535,7 @@
     <div class="card-grid" id="card-grid"></div>
   </section>
 
+  </div>
 </main>
 
 <footer>
