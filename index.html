@@ -6,7 +6,7 @@
 <title>OSINTrack — Référentiel d'outils OSINT</title>
 <link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#ffffff;
@@ -82,20 +82,14 @@
     object-fit:contain;
   }
   .title-block{flex:1; min-width:0;}
+  .home-link{display:flex; align-items:center; gap:28px; color:inherit; text-decoration:none;}
   h1{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:clamp(34px, 5vw, 54px);
-    letter-spacing:0;
+    font-family:'Special Elite', monospace;
+    font-size:clamp(30px, 4.4vw, 44px);
+    letter-spacing:0.01em;
+    color:var(--paper);
     display:inline-flex;
     align-items:baseline;
-  }
-  .brand-osint{
-    font-weight:700;
-    color:var(--paper);
-  }
-  .brand-track{
-    font-weight:400;
-    color:var(--ink-dim);
   }
   .cursor{
     font-weight:700;
@@ -116,10 +110,8 @@
   .mode-tabs-row{
     display:flex;
     align-items:stretch;
-    justify-content:space-between;
-    gap:24px;
   }
-  .tabs-group{display:flex;}
+  .tabs-group{display:flex; width:100%;}
   .mode-tab{
     flex:0 0 auto;
     padding:16px 26px;
@@ -147,28 +139,63 @@
     position:absolute; left:0; right:0; bottom:-1px;
     height:2px; background:var(--red);
   }
-  .search-field-inline{
+  .search-tab{
+    flex:1 1 auto;
+    min-width:180px;
     display:flex;
     align-items:center;
-    flex:1 1 260px;
-    max-width:340px;
-    border-left:1px solid var(--border);
-    padding-left:18px;
+    gap:10px;
+    border-right:none;
+    cursor:text;
   }
-  .search-field-inline input{
-    width:100%;
+  .search-tab:focus-within{
+    color:var(--paper);
+    background:var(--bg);
+  }
+  .search-tab:focus-within .num{color:var(--red);}
+  .search-tab:focus-within::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:-1px;
+    height:2px; background:var(--red);
+  }
+  .search-tab .search-label{white-space:nowrap;}
+  .search-tab input{
+    flex:1;
+    min-width:60px;
     background:transparent;
     border:none;
     outline:none;
     color:var(--paper);
     font-family:'IBM Plex Mono', monospace;
-    font-size:13px;
-    padding:14px 4px;
+    font-size:12.5px;
+    text-transform:none;
+    letter-spacing:0.02em;
+    padding:2px 0;
   }
-  .search-field-inline input::placeholder{color:var(--ink-faint);}
+  .search-tab input::placeholder{color:var(--ink-faint); text-transform:none;}
 
-  main{padding:40px 0 80px;}
+  main{padding:48px 0 80px;}
   section[hidden]{display:none !important;}
+
+  /* ============ WELCOME ============ */
+  .welcome{
+    border:1px solid var(--border);
+    background:var(--bg-panel);
+    padding:36px 32px;
+  }
+  .welcome h2{
+    font-family:'Special Elite', monospace;
+    font-size:24px;
+    color:var(--paper);
+    margin-bottom:18px;
+  }
+  .welcome p{
+    color:var(--ink-dim);
+    font-size:13.5px;
+    line-height:1.75;
+    margin-bottom:14px;
+  }
+  .welcome p:last-child{margin-bottom:0;}
 
   /* ============ GUIDED MODE ============ */
   .guided-step{margin-bottom:34px;}
@@ -235,13 +262,17 @@
     font-size:11px; color:var(--ink-faint); letter-spacing:0.08em;
   }
   .path-list{position:relative;}
-  .path-item{
+  a.path-item{
     display:flex;
     gap:20px;
     padding:20px 22px;
     border-bottom:1px solid var(--border);
     position:relative;
+    color:inherit;
+    text-decoration:none;
+    transition:background .15s ease;
   }
+  a.path-item:hover{background:var(--bg-raised);}
   .path-item:last-child{border-bottom:none;}
   .path-item .step-num{
     font-family:'IBM Plex Mono', monospace;
@@ -258,27 +289,11 @@
     color:var(--paper);
     margin-bottom:4px;
   }
-  .path-item-body .tool-name a{
-    color:var(--paper);
-    border-bottom:1px solid transparent;
-  }
-  .path-item-body .tool-name a:hover{
-    color:var(--red);
-    border-bottom-color:var(--red);
-  }
   .path-item-body .note{
     color:var(--ink-dim);
     font-size:13px;
     line-height:1.55;
   }
-  .path-item-body .goto-link{
-    display:inline-block;
-    margin-top:8px;
-    font-size:11px;
-    letter-spacing:0.08em;
-    color:var(--red);
-  }
-  .path-item-body .goto-link::after{content:" →";}
 
   /* ============ EXPLORE MODE ============ */
   .explore-toolbar{
@@ -343,9 +358,11 @@
   }
   .card:hover{background:var(--bg-raised);}
 
-  /* reticle corner brackets — signature motif echoing the logo crosshair */
+  /* reticle corner brackets — signature motif echoing the logo crosshair — shared by cards & parcours items */
   .card::before, .card::after,
-  .card .rb1, .card .rb2{
+  .card .rb1, .card .rb2,
+  a.path-item::before, a.path-item::after,
+  a.path-item .rb1, a.path-item .rb2{
     content:"";
     position:absolute;
     width:10px; height:10px;
@@ -354,12 +371,14 @@
     opacity:0;
     transition:opacity .15s ease;
   }
-  .card::before{top:6px; left:6px; border-width:1px 0 0 1px;}
-  .card::after{top:6px; right:6px; border-width:1px 1px 0 0;}
-  .card .rb1{bottom:6px; left:6px; border-width:0 0 1px 1px;}
-  .card .rb2{bottom:6px; right:6px; border-width:0 1px 1px 0;}
+  .card::before, a.path-item::before{top:6px; left:6px; border-width:1px 0 0 1px;}
+  .card::after, a.path-item::after{top:6px; right:6px; border-width:1px 1px 0 0;}
+  .card .rb1, a.path-item .rb1{bottom:6px; left:6px; border-width:0 0 1px 1px;}
+  .card .rb2, a.path-item .rb2{bottom:6px; right:6px; border-width:0 1px 1px 0;}
   .card:hover::before, .card:hover::after,
-  .card:hover .rb1, .card:hover .rb2{opacity:1;}
+  .card:hover .rb1, .card:hover .rb2,
+  a.path-item:hover::before, a.path-item:hover::after,
+  a.path-item:hover .rb1, a.path-item:hover .rb2{opacity:1;}
 
   .card-meta{
     display:flex; gap:8px; flex-wrap:wrap;
@@ -408,13 +427,12 @@
   }
 
   .loading{
-    padding:60px 0;
+    padding:20px 0;
     text-align:center;
     color:var(--ink-dim);
     font-size:13px;
     letter-spacing:0.06em;
   }
-  .loading .loading-cursor{color:var(--ink-dim);}
 
   footer{
     border-top:1px solid var(--border);
@@ -427,12 +445,11 @@
 
   @media (max-width: 640px){
     .masthead{padding:32px 0 26px;}
-    .masthead-inner{gap:16px;}
+    .home-link{gap:16px;}
     .logo{height:52px;}
-    .mode-tabs-row{flex-direction:column; gap:0;}
-    .tabs-group{border-bottom:1px solid var(--border);}
-    .search-field-inline{border-left:none; max-width:none; padding:10px 0;}
+    .tabs-group{flex-wrap:wrap;}
     .mode-tab{padding:12px 14px; font-size:11px;}
+    .search-tab{flex-basis:100%; border-top:1px solid var(--border);}
     .path-item{flex-direction:column; gap:8px;}
     .path-item .step-num{width:auto; text-align:left;}
   }
@@ -443,20 +460,23 @@
 <div class="site-header">
   <header class="masthead">
     <div class="wrap masthead-inner">
-      <img src="logo.png" alt="OSINTrack" class="logo">
-      <div class="title-block">
-        <h1><span class="brand-osint">OSINT</span><span class="brand-track">rack</span><span class="cursor">_</span></h1>
-      </div>
+      <a href="#" class="home-link" id="home-link">
+        <img src="logo.png" alt="OSINTrack" class="logo">
+        <div class="title-block">
+          <h1>OSINTrack<span class="cursor">_</span></h1>
+        </div>
+      </a>
     </div>
   </header>
   <nav class="mode-tabs-bar">
     <div class="wrap mode-tabs-row">
       <div class="tabs-group">
-        <button class="mode-tab active" data-mode="guided"><span class="num">01</span>Parcours guidé</button>
+        <button class="mode-tab" data-mode="guided"><span class="num">01</span>Parcours guidé</button>
         <button class="mode-tab" data-mode="explore"><span class="num">02</span>Explorer</button>
-      </div>
-      <div class="search-field-inline">
-        <input type="text" id="search-input" placeholder="Rechercher un outil...">
+        <div class="mode-tab search-tab">
+          <span class="num">03</span><span class="search-label">Rechercher</span>
+          <input type="text" id="search-input" placeholder="nom, mot-clé...">
+        </div>
       </div>
     </div>
   </nav>
@@ -464,7 +484,17 @@
 
 <main class="wrap">
 
-  <div id="loading" class="loading">CHARGEMENT DES DONNÉES<span class="cursor loading-cursor">_</span></div>
+  <div id="loading" class="loading" hidden></div>
+
+  <!-- ============ ACCUEIL ============ -->
+  <section id="welcome">
+    <div class="welcome">
+      <h2>Bienvenue sur OSINTrack</h2>
+      <p>OSINTrack est un répertoire pédagogique consacré aux outils d'OSINT (Open Source Intelligence), conçu pour faciliter leur découverte et leur utilisation dans un cadre éducatif.</p>
+      <p>Contrairement à un simple annuaire d'outils, OSINTrack vous guide à partir de votre besoin. Commencez par définir votre point de départ (adresse e-mail, nom, numéro de téléphone, nom de domaine, adresse IP, image, etc.), puis précisez votre objectif (vérifier une identité, retrouver un profil, analyser une infrastructure, rechercher des fuites de données, géolocaliser une information, etc.). Le répertoire vous proposera alors les outils les plus adaptés.</p>
+      <p>L'objectif d'OSINTrack est d'aider étudiants et curieux à mieux comprendre les méthodes de recherche en sources ouvertes, à choisir les bons outils et à développer une démarche rigoureuse, éthique et efficace dans le domaine de la cybersécurité et du renseignement en sources ouvertes.</p>
+    </div>
+  </section>
 
   <!-- ============ MODE 1 : PARCOURS GUIDÉ ============ -->
   <section id="mode-guided" hidden>
@@ -623,14 +653,14 @@
       const tool = toolMap[String(s.outil_id)];
       const url = tool ? tool.url : "#";
       return `
-        <div class="path-item">
+        <a class="path-item" href="${escapeHtml(url)}" target="_blank" rel="noopener">
+          <div class="rb1"></div><div class="rb2"></div>
           <div class="step-num">${String(s.etape_num).padStart(2,"0")}</div>
           <div class="path-item-body">
-            <div class="tool-name"><a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(s.outil_nom)}</a></div>
+            <div class="tool-name">${escapeHtml(s.outil_nom)}</div>
             <div class="note">${escapeHtml(s.note_etape)}</div>
-            <a class="goto-link" href="${escapeHtml(url)}" target="_blank" rel="noopener">Accéder à l'outil</a>
           </div>
-        </div>`;
+        </a>`;
     }).join("");
 
     resultEl.innerHTML = `
@@ -716,15 +746,24 @@
     renderCards();
   });
 
-  /* ============ MODE TABS ============ */
-  document.querySelectorAll(".mode-tab").forEach(tab => {
-    tab.addEventListener("click", () => {
-      document.querySelectorAll(".mode-tab").forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
-      const mode = tab.dataset.mode;
-      document.getElementById("mode-guided").hidden = mode !== "guided";
-      document.getElementById("mode-explore").hidden = mode !== "explore";
+  /* ============ NAVIGATION (accueil / onglets) ============ */
+  function showSection(mode){
+    document.getElementById("welcome").hidden = mode !== "welcome";
+    document.getElementById("mode-guided").hidden = mode !== "guided";
+    document.getElementById("mode-explore").hidden = mode !== "explore";
+    document.querySelectorAll(".mode-tab[data-mode]").forEach(t => {
+      t.classList.toggle("active", t.dataset.mode === mode);
     });
+  }
+
+  document.querySelectorAll(".mode-tab[data-mode]").forEach(tab => {
+    tab.addEventListener("click", () => showSection(tab.dataset.mode));
+  });
+
+  document.getElementById("home-link").addEventListener("click", (e) => {
+    e.preventDefault();
+    showSection("welcome");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   /* ============ INIT ============ */
@@ -735,14 +774,12 @@
         fetchSheet("parcours", PARCOURS_HEADERS)
       ]);
     } catch(err){
-      document.getElementById("loading").innerHTML =
-        `ERREUR DE CHARGEMENT — vérifiez que le Google Sheet est bien partagé en lecture ("Tous les utilisateurs disposant du lien").`;
+      const loadingEl = document.getElementById("loading");
+      loadingEl.hidden = false;
+      loadingEl.textContent = `ERREUR DE CHARGEMENT — vérifiez que le Google Sheet est bien partagé en lecture ("Tous les utilisateurs disposant du lien").`;
       console.error(err);
       return;
     }
-
-    document.getElementById("loading").hidden = true;
-    document.getElementById("mode-guided").hidden = false;
 
     renderDepartChoices();
     renderObjectifChoices();
