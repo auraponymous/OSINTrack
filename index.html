@@ -290,6 +290,131 @@
     line-height:1.55;
   }
 
+  /* ============ REPORT MODE ============ */
+  .report-section{margin-bottom:40px;}
+  .report-section .step-label{margin-bottom:16px;}
+  .report-hint{
+    color:var(--ink-faint);
+    font-size:12px;
+    font-style:italic;
+    margin-bottom:14px;
+  }
+  .field-row{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:16px;}
+  .field{display:flex; flex-direction:column; gap:6px;}
+  .field label{font-size:11px; letter-spacing:0.06em; color:var(--ink-dim); text-transform:uppercase;}
+  .field input, .field select, .field textarea{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    padding:10px 12px;
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    color:var(--paper);
+    resize:vertical;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--border-bright);}
+  .field textarea{min-height:90px; line-height:1.6;}
+  .field-sub{margin-bottom:18px;}
+  .field-sub label{display:block; font-size:12px; color:var(--paper); margin-bottom:6px;}
+
+  .report-table{width:100%; border-collapse:collapse; margin-bottom:12px;}
+  .report-table th{
+    text-align:left;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    padding:8px 10px;
+    border-bottom:1px solid var(--border-bright);
+  }
+  .report-table td{
+    padding:6px;
+    border-bottom:1px solid var(--border);
+    vertical-align:top;
+  }
+  .report-table td input, .report-table td select{
+    width:100%;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    padding:7px 8px;
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    color:var(--paper);
+  }
+  .row-remove{
+    background:none; border:none; color:var(--red);
+    cursor:pointer; font-size:16px; padding:4px 8px;
+  }
+  .btn-add{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:0.06em;
+    padding:8px 14px;
+    background:transparent;
+    border:1px solid var(--border-bright);
+    color:var(--ink-dim);
+    cursor:pointer;
+  }
+  .btn-add:hover{color:var(--paper); border-color:var(--paper);}
+
+  .ethics-checklist{display:flex; flex-direction:column; gap:10px; margin-bottom:16px;}
+  .ethics-checklist label{
+    display:flex; align-items:center; gap:10px;
+    font-size:13px; color:var(--paper);
+  }
+  .ethics-checklist input[type="checkbox"]{width:16px; height:16px; accent-color:var(--red);}
+
+  .report-actions{
+    display:flex; flex-wrap:wrap; gap:12px;
+    padding-top:24px; border-top:1px solid var(--border);
+  }
+  .report-actions a, .report-actions button{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.06em;
+    padding:12px 20px;
+    border:1px solid var(--border-bright);
+    background:var(--bg-panel);
+    color:var(--paper);
+    cursor:pointer;
+    text-decoration:none;
+  }
+  .report-actions .primary{border-color:var(--red); color:var(--red);}
+  .report-actions .primary:hover{background:var(--red-glow);}
+  .report-actions button:hover, .report-actions a:hover{border-color:var(--paper);}
+  .report-actions .danger{color:var(--red); border-color:var(--red-dim);}
+
+  @media print{
+    .site-header, footer, .report-actions, .btn-add, .row-remove{display:none !important;}
+    body{display:block;}
+    main{padding:0;}
+    section:not(#mode-report){display:none !important;}
+    #mode-report{display:block !important;}
+    .field input, .field select, .field textarea{border:none; background:none; padding:2px 0;}
+    .report-table td input, .report-table td select{border:none; background:none;}
+  }
+
+  /* ============ POPUP MODE ============ */
+  body.popup-mode .site-header,
+  body.popup-mode footer,
+  body.popup-mode #welcome,
+  body.popup-mode #mode-guided,
+  body.popup-mode #mode-explore{
+    display:none !important;
+  }
+  body.popup-mode main{padding:24px 0 40px;}
+  body.popup-mode .wrap{padding:0 20px; max-width:none;}
+  body.popup-mode .report-actions{flex-direction:column;}
+  body.popup-mode .report-actions a, body.popup-mode .report-actions button{text-align:center;}
+  .popup-titlebar{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.06em;
+    padding:16px 20px;
+    border-bottom:1px solid var(--border);
+    background:var(--bg-panel);
+  }
+
   /* ============ EXPLORE MODE ============ */
   .explore-toolbar{
     display:flex; flex-direction:column; gap:18px;
@@ -452,6 +577,7 @@
 </head>
 <body>
 
+<div class="popup-titlebar" hidden>OSINTrack — Rapport</div>
 <div class="site-header">
   <header class="masthead">
     <div class="wrap masthead-inner">
@@ -468,8 +594,9 @@
       <div class="tabs-group">
         <button class="mode-tab" data-mode="guided"><span class="num">01</span>Parcours guidé</button>
         <button class="mode-tab" data-mode="explore"><span class="num">02</span>Explorer</button>
+        <button class="mode-tab" data-mode="report"><span class="num">03</span>Rapport</button>
         <div class="mode-tab search-tab">
-          <span class="num">03</span><span class="search-label">Rechercher</span>
+          <span class="num">04</span><span class="search-label">Rechercher</span>
           <input type="text" id="search-input" placeholder="nom, mot-clé...">
         </div>
       </div>
@@ -533,6 +660,140 @@
     </div>
 
     <div class="card-grid" id="card-grid"></div>
+  </section>
+
+  <!-- ============ MODE 3 : RAPPORT ============ -->
+  <section id="mode-report" hidden>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">01</span> Informations générales</div>
+      <div class="field-sub">
+        <label>Titre de la recherche</label>
+        <input type="text" data-field="titre" placeholder="ex : Vérification identité — contact entrant">
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Auteur</label><input type="text" data-field="auteur"></div>
+        <div class="field"><label>Date</label><input type="date" data-field="date_recherche"></div>
+        <div class="field"><label>Version</label><input type="text" data-field="version" placeholder="v1"></div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Classification</label>
+          <select data-field="classification">
+            <option value="Public">Public</option>
+            <option value="Interne">Interne</option>
+            <option value="Confidentiel">Confidentiel</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Cadre de la recherche</label>
+          <select data-field="cadre">
+            <option value="Exercice pédagogique">Exercice pédagogique</option>
+            <option value="Audit">Audit</option>
+            <option value="Veille">Veille</option>
+            <option value="Investigation">Investigation</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">02</span> Objectif</div>
+      <p class="report-hint">Décrire précisément la question à laquelle la recherche doit répondre.</p>
+      <div class="field"><textarea data-field="objectif" placeholder="ex : vérifier si l'adresse e-mail X est associée à une identité réelle et à des comptes publics"></textarea></div>
+    </div>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">03</span> Point de départ</div>
+      <div class="field-row">
+        <div class="field"><label>Type</label><input type="text" data-field="depart_type" placeholder="ex : E-mail"></div>
+        <div class="field"><label>Valeur</label><input type="text" data-field="depart_valeur"></div>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">04</span> Méthodologie</div>
+      <p class="report-hint">Décrire les différentes étapes suivies, dans l'ordre.</p>
+      <div class="field"><textarea data-field="methodologie" placeholder="1. Recherche sur moteurs généralistes&#10;2. Recherche sur moteurs spécialisés&#10;3. Vérification des réseaux sociaux..."></textarea></div>
+    </div>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">05</span> Outils utilisés</div>
+      <table class="report-table">
+        <thead><tr><th>Outil</th><th>Objectif</th><th>Résultat</th><th>Fiabilité</th><th>Crédibilité</th><th></th></tr></thead>
+        <tbody id="report-outils-body"></tbody>
+      </table>
+      <button class="btn-add" id="add-outil-row">+ Ajouter une ligne</button>
+      <p class="report-hint" style="margin-top:10px;">Grille Admiralty — Fiabilité de la source : A (entièrement fiable) → F (fiabilité inconnue). Crédibilité de l'information : 1 (confirmée par d'autres sources) → 6 (impossible à juger).</p>
+    </div>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">06</span> Résultats</div>
+      <div class="field-sub"><label>Identité</label><textarea data-field="resultats_identite" placeholder="nom, pseudonyme, profession..."></textarea></div>
+      <div class="field-sub"><label>Comptes découverts</label><textarea data-field="resultats_comptes" placeholder="GitHub, LinkedIn, X, Reddit..."></textarea></div>
+      <div class="field-sub"><label>Domaines</label><textarea data-field="resultats_domaines" placeholder="nom de domaine, WHOIS, sous-domaines..."></textarea></div>
+      <div class="field-sub"><label>Images</label><textarea data-field="resultats_images" placeholder="avatar retrouvé, recherche inversée..."></textarea></div>
+      <div class="field-sub"><label>Fuites de données</label><textarea data-field="resultats_fuites" placeholder="service concerné, date, type de données..."></textarea></div>
+    </div>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">07</span> Corrélations</div>
+      <p class="report-hint">Relier les informations entre elles (ex : même pseudonyme sur deux plateformes, même photo, même numéro...).</p>
+      <div class="field"><textarea data-field="correlations"></textarea></div>
+    </div>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">08</span> Chaîne de raisonnement</div>
+      <p class="report-hint">Retracer le cheminement de l'enquête : comment chaque découverte a mené à la suivante.</p>
+      <table class="report-table">
+        <thead><tr><th>Étape</th><th>Élément découvert</th><th>Pourquoi / pivot</th><th></th></tr></thead>
+        <tbody id="report-chaine-body"></tbody>
+      </table>
+      <button class="btn-add" id="add-chaine-row">+ Ajouter une étape</button>
+    </div>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">09</span> Évaluation de la fiabilité</div>
+      <p class="report-hint">Synthèse globale : quel niveau de confiance pour les principales conclusions ?</p>
+      <div class="field"><textarea data-field="fiabilite_synthese" placeholder="ex : identité confirmée par plusieurs sources (élevé) — lieu de résidence, hypothèse non vérifiée (faible)"></textarea></div>
+    </div>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">10</span> Limites de la recherche</div>
+      <p class="report-hint">Données supprimées, comptes privés, résultats non vérifiables, homonymie possible...</p>
+      <div class="field"><textarea data-field="limites"></textarea></div>
+    </div>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">11</span> Cadre éthique et légal</div>
+      <div class="ethics-checklist">
+        <label><input type="checkbox" data-field="ethique_finalite"> Finalité légitime clairement identifiée</label>
+        <label><input type="checkbox" data-field="ethique_donnees"> Données strictement nécessaires à l'objectif</label>
+        <label><input type="checkbox" data-field="ethique_vie_privee"> Respect de la vie privée des personnes concernées</label>
+        <label><input type="checkbox" data-field="ethique_diffusion"> Pas de diffusion non autorisée des résultats</label>
+      </div>
+      <div class="field"><textarea data-field="ethique_notes" placeholder="remarques complémentaires..."></textarea></div>
+    </div>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">12</span> Conclusion</div>
+      <p class="report-hint">Résumé des principaux résultats en quelques paragraphes.</p>
+      <div class="field"><textarea data-field="conclusion"></textarea></div>
+    </div>
+
+    <div class="report-section">
+      <div class="step-label"><span class="n">13</span> Annexes</div>
+      <p class="report-hint">Captures d'écran, URLs, exports, horodatages, hash des fichiers.</p>
+      <div class="field"><textarea data-field="annexes"></textarea></div>
+    </div>
+
+    <div class="report-actions">
+      <button class="primary" id="report-export">Exporter / Imprimer</button>
+      <a href="templates/modele-rapport-osint.docx" download>Modèle vierge (Word)</a>
+      <a href="templates/modele-rapport-osint.pdf" download>Modèle vierge (PDF)</a>
+      <button class="danger" id="report-reset">Réinitialiser le rapport</button>
+    </div>
+
   </section>
 
   </div>
@@ -775,6 +1036,19 @@
   }
 
   document.querySelectorAll(".mode-tab[data-mode]").forEach(tab => {
+    if(tab.dataset.mode === "report"){
+      tab.addEventListener("click", () => {
+        const w = 480, h = 900;
+        const left = Math.max(0, (screen.availWidth || window.outerWidth) - w - 20);
+        const top = 40;
+        window.open(
+          "index.html?view=report",
+          "osintrack-rapport",
+          `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=yes`
+        );
+      });
+      return;
+    }
     tab.addEventListener("click", () => showSection(tab.dataset.mode));
   });
 
@@ -783,6 +1057,108 @@
     showSection("welcome");
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+
+  /* ============ REPORT MODE ============ */
+  const REPORT_STORAGE_KEY = "osintrack_report_v1";
+
+  function outilRowHtml(data = {}){
+    const fiabOptions = ["A","B","C","D","E","F"].map(v =>
+      `<option value="${v}" ${data.fiabilite===v?"selected":""}>${v}</option>`).join("");
+    const credOptions = ["1","2","3","4","5","6"].map(v =>
+      `<option value="${v}" ${data.credibilite===v?"selected":""}>${v}</option>`).join("");
+    return `
+      <td><input type="text" data-col="outil" value="${escapeHtml(data.outil||"")}"></td>
+      <td><input type="text" data-col="objectif" value="${escapeHtml(data.objectif||"")}"></td>
+      <td><input type="text" data-col="resultat" value="${escapeHtml(data.resultat||"")}"></td>
+      <td><select data-col="fiabilite"><option value="">—</option>${fiabOptions}</select></td>
+      <td><select data-col="credibilite"><option value="">—</option>${credOptions}</select></td>
+      <td><button class="row-remove" type="button">×</button></td>`;
+  }
+
+  function chaineRowHtml(data = {}){
+    return `
+      <td><input type="text" data-col="etape" value="${escapeHtml(data.etape||"")}"></td>
+      <td><input type="text" data-col="element" value="${escapeHtml(data.element||"")}"></td>
+      <td><input type="text" data-col="pourquoi" value="${escapeHtml(data.pourquoi||"")}"></td>
+      <td><button class="row-remove" type="button">×</button></td>`;
+  }
+
+  function addTableRow(tbodyId, rowHtmlFn, data){
+    const tr = document.createElement("tr");
+    tr.innerHTML = rowHtmlFn(data);
+    tr.querySelector(".row-remove").addEventListener("click", () => {
+      tr.remove();
+      saveReport();
+    });
+    tr.querySelectorAll("input, select").forEach(el => el.addEventListener("input", saveReport));
+    document.getElementById(tbodyId).appendChild(tr);
+  }
+
+  function readTableRows(tbodyId){
+    return Array.from(document.querySelectorAll(`#${tbodyId} tr`)).map(tr => {
+      const row = {};
+      tr.querySelectorAll("[data-col]").forEach(el => { row[el.dataset.col] = el.value; });
+      return row;
+    });
+  }
+
+  function saveReport(){
+    const data = {};
+    document.querySelectorAll("#mode-report [data-field]").forEach(el => {
+      data[el.dataset.field] = el.type === "checkbox" ? el.checked : el.value;
+    });
+    data._outils = readTableRows("report-outils-body");
+    data._chaine = readTableRows("report-chaine-body");
+    localStorage.setItem(REPORT_STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function loadReport(){
+    let data = {};
+    try{
+      const raw = localStorage.getItem(REPORT_STORAGE_KEY);
+      if(raw) data = JSON.parse(raw);
+    } catch(e){ data = {}; }
+
+    document.querySelectorAll("#mode-report [data-field]").forEach(el => {
+      const v = data[el.dataset.field];
+      if(v === undefined) return;
+      if(el.type === "checkbox") el.checked = !!v;
+      else el.value = v;
+    });
+
+    document.getElementById("report-outils-body").innerHTML = "";
+    (data._outils && data._outils.length ? data._outils : [{}]).forEach(row => addTableRow("report-outils-body", outilRowHtml, row));
+
+    document.getElementById("report-chaine-body").innerHTML = "";
+    (data._chaine && data._chaine.length ? data._chaine : [{}]).forEach(row => addTableRow("report-chaine-body", chaineRowHtml, row));
+  }
+
+  function initReport(){
+    document.querySelectorAll("#mode-report [data-field]").forEach(el => {
+      el.addEventListener("input", saveReport);
+      el.addEventListener("change", saveReport);
+    });
+    document.getElementById("add-outil-row").addEventListener("click", () => { addTableRow("report-outils-body", outilRowHtml); saveReport(); });
+    document.getElementById("add-chaine-row").addEventListener("click", () => { addTableRow("report-chaine-body", chaineRowHtml); saveReport(); });
+
+    document.getElementById("report-export").addEventListener("click", () => window.print());
+
+    document.getElementById("report-reset").addEventListener("click", () => {
+      if(!confirm("Effacer tout le contenu du rapport ? Cette action est irréversible.")) return;
+      localStorage.removeItem(REPORT_STORAGE_KEY);
+      document.querySelectorAll("#mode-report [data-field]").forEach(el => {
+        if(el.type === "checkbox") el.checked = false;
+        else if(el.tagName === "SELECT") el.selectedIndex = 0;
+        else el.value = "";
+      });
+      document.getElementById("report-outils-body").innerHTML = "";
+      addTableRow("report-outils-body", outilRowHtml);
+      document.getElementById("report-chaine-body").innerHTML = "";
+      addTableRow("report-chaine-body", chaineRowHtml);
+    });
+
+    loadReport();
+  }
 
   /* ============ INIT ============ */
   async function init(){
@@ -809,7 +1185,23 @@
     renderCards();
   }
 
+  /* ============ POPUP MODE (rapport en fenêtre indépendante) ============ */
+  function initPopupModeIfNeeded(){
+    const isReportPopup = new URLSearchParams(location.search).get("view") === "report";
+    if(!isReportPopup) return false;
+    document.body.classList.add("popup-mode");
+    document.querySelector(".popup-titlebar").hidden = false;
+    document.title = "OSINTrack — Rapport";
+    document.getElementById("welcome").hidden = true;
+    document.getElementById("mode-guided").hidden = true;
+    document.getElementById("mode-explore").hidden = true;
+    document.getElementById("mode-report").hidden = false;
+    return true;
+  }
+
   init();
+  initReport();
+  initPopupModeIfNeeded();
 </script>
 
 </body>
