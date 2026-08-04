@@ -31,6 +31,8 @@
     font-size:14px;
     line-height:1.6;
     min-height:100vh;
+    display:flex;
+    flex-direction:column;
     position:relative;
   }
 
@@ -127,13 +129,12 @@
     position:relative;
     transition:color .15s ease, background .15s ease;
   }
-  .mode-tab .num{color:var(--ink-faint); margin-right:8px;}
+  .mode-tab .num{color:var(--red); margin-right:8px;}
   .mode-tab:hover{color:var(--paper); background:var(--bg-raised);}
   .mode-tab.active{
     color:var(--paper);
     background:var(--bg);
   }
-  .mode-tab.active .num{color:var(--red);}
   .mode-tab.active::after{
     content:"";
     position:absolute; left:0; right:0; bottom:-1px;
@@ -174,7 +175,7 @@
   }
   .search-tab input::placeholder{color:var(--ink-faint); text-transform:none;}
 
-  main{padding:48px 0 80px;}
+  main{padding:72px 0 80px; flex:1 0 auto;}
   section[hidden]{display:none !important;}
 
   /* ============ WELCOME ============ */
@@ -182,12 +183,6 @@
     border:1px solid var(--border);
     background:var(--bg-panel);
     padding:36px 32px;
-  }
-  .welcome h2{
-    font-family:'Special Elite', monospace;
-    font-size:24px;
-    color:var(--paper);
-    margin-bottom:18px;
   }
   .welcome p{
     color:var(--ink-dim);
@@ -489,7 +484,6 @@
   <!-- ============ ACCUEIL ============ -->
   <section id="welcome">
     <div class="welcome">
-      <h2>Bienvenue sur OSINTrack</h2>
       <p>OSINTrack est un répertoire pédagogique consacré aux outils d'OSINT (Open Source Intelligence), conçu pour faciliter leur découverte et leur utilisation dans un cadre éducatif.</p>
       <p>Contrairement à un simple annuaire d'outils, OSINTrack vous guide à partir de votre besoin. Commencez par définir votre point de départ (adresse e-mail, nom, numéro de téléphone, nom de domaine, adresse IP, image, etc.), puis précisez votre objectif (vérifier une identité, retrouver un profil, analyser une infrastructure, rechercher des fuites de données, géolocaliser une information, etc.). Le répertoire vous proposera alors les outils les plus adaptés.</p>
       <p>L'objectif d'OSINTrack est d'aider étudiants et curieux à mieux comprendre les méthodes de recherche en sources ouvertes, à choisir les bons outils et à développer une démarche rigoureuse, éthique et efficace dans le domaine de la cybersécurité et du renseignement en sources ouvertes.</p>
@@ -544,7 +538,7 @@
 
 <footer>
   <div class="wrap">
-    OSINTrack — Usage éducatif &amp; professionnel — Restez dans la légalité © Auraponymous 2026
+    OSINTrack — Usage éducatif — Restez dans la légalité ⌘ Auraponymous 2026
   </div>
 </footer>
 
@@ -747,7 +741,29 @@
   });
 
   /* ============ NAVIGATION (accueil / onglets) ============ */
+  let currentMode = "welcome";
+
+  function resetGuided(){
+    state.depart = null;
+    state.objectif = null;
+    document.querySelectorAll("#depart-choices .choice-btn").forEach(b => b.classList.remove("selected"));
+    renderObjectifChoices();
+    renderGuidedResult();
+  }
+
+  function resetExplore(){
+    Object.keys(activeFilters).forEach(k => activeFilters[k].clear());
+    document.querySelectorAll(".chip.active").forEach(c => c.classList.remove("active"));
+    document.getElementById("search-input").value = "";
+    searchQuery = "";
+    renderCards();
+  }
+
   function showSection(mode){
+    if(currentMode === "guided" && mode !== "guided") resetGuided();
+    if(currentMode === "explore" && mode !== "explore") resetExplore();
+    currentMode = mode;
+
     document.getElementById("welcome").hidden = mode !== "welcome";
     document.getElementById("mode-guided").hidden = mode !== "guided";
     document.getElementById("mode-explore").hidden = mode !== "explore";
