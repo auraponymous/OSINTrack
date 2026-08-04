@@ -6,17 +6,17 @@
 <title>OSINTrack — Référentiel d'outils OSINT</title>
 <link rel="icon" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#ffffff;
-    --bg-panel:#f7f6f1;
-    --bg-raised:#eeece2;
-    --paper:#15140f;
-    --ink-dim:#5a574c;
-    --ink-faint:#8f8b7c;
-    --border:#dcd8ca;
-    --border-bright:#bfbaa7;
+    --bg-panel:#f7f7f7;
+    --bg-raised:#eeeeee;
+    --paper:#141414;
+    --ink-dim:#5c5c5c;
+    --ink-faint:#8a8a8a;
+    --border:#e1e1e1;
+    --border-bright:#c4c4c4;
     --red:#c4211d;
     --red-dim:#f8dcda;
     --red-glow:rgba(196,33,29,0.08);
@@ -56,29 +56,36 @@
 
   ::selection{background:var(--red); color:#ffffff;}
 
+  /* ============ STICKY HEADER WRAPPER ============ */
+  .site-header{
+    position:sticky;
+    top:0;
+    z-index:100;
+    background:var(--bg);
+  }
+
   /* ============ MASTHEAD ============ */
   .masthead{
     border-bottom:1px solid var(--border);
-    padding:36px 0 28px;
-    background:
-      linear-gradient(180deg, var(--bg-panel) 0%, var(--bg) 100%);
+    padding:48px 0 40px;
+    background:var(--bg);
   }
   .masthead-inner{
     display:flex;
     align-items:center;
-    gap:22px;
+    gap:28px;
   }
   .logo{
-    height:58px;
+    height:86px;
     width:auto;
     flex-shrink:0;
     object-fit:contain;
   }
   .title-block{flex:1; min-width:0;}
   h1{
-    font-family:'Space Mono', monospace;
-    font-size:clamp(30px, 4.2vw, 46px);
-    letter-spacing:0.01em;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:clamp(34px, 5vw, 54px);
+    letter-spacing:0;
     display:inline-flex;
     align-items:baseline;
   }
@@ -91,27 +98,31 @@
     color:var(--ink-dim);
   }
   .cursor{
-    display:inline-block;
-    width:0.42em; height:0.8em;
-    background:var(--ink-faint);
-    margin-left:7px;
+    font-weight:700;
+    color:var(--red);
+    margin-left:6px;
     animation:blink 1.1s steps(1) infinite;
-    transform:translateY(2px);
   }
   @keyframes blink{
     0%,49%{opacity:1;}
     50%,100%{opacity:0;}
   }
 
-  /* ============ MODE TABS ============ */
-  .mode-tabs{
-    display:flex;
+  /* ============ MODE TABS + SEARCH BAR ============ */
+  .mode-tabs-bar{
     border-bottom:1px solid var(--border);
     background:var(--bg-panel);
   }
+  .mode-tabs-row{
+    display:flex;
+    align-items:stretch;
+    justify-content:space-between;
+    gap:24px;
+  }
+  .tabs-group{display:flex;}
   .mode-tab{
     flex:0 0 auto;
-    padding:14px 26px;
+    padding:16px 26px;
     font-family:'IBM Plex Mono', monospace;
     font-size:12.5px;
     letter-spacing:0.1em;
@@ -136,6 +147,25 @@
     position:absolute; left:0; right:0; bottom:-1px;
     height:2px; background:var(--red);
   }
+  .search-field-inline{
+    display:flex;
+    align-items:center;
+    flex:1 1 260px;
+    max-width:340px;
+    border-left:1px solid var(--border);
+    padding-left:18px;
+  }
+  .search-field-inline input{
+    width:100%;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--paper);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    padding:14px 4px;
+  }
+  .search-field-inline input::placeholder{color:var(--ink-faint);}
 
   main{padding:40px 0 80px;}
   section[hidden]{display:none !important;}
@@ -196,7 +226,7 @@
     flex-wrap:wrap; gap:8px;
   }
   .dossier-head h2{
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     font-size:18px;
     font-weight:700;
     color:var(--paper);
@@ -214,7 +244,7 @@
   }
   .path-item:last-child{border-bottom:none;}
   .path-item .step-num{
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     font-weight:700;
     font-size:22px;
     color:var(--ink-faint);
@@ -254,32 +284,6 @@
   .explore-toolbar{
     display:flex; flex-direction:column; gap:18px;
     margin-bottom:28px;
-  }
-  .search-field{
-    position:relative;
-    border:1px solid var(--border);
-    background:var(--bg-panel);
-  }
-  .search-field input{
-    width:100%;
-    background:transparent;
-    border:none;
-    outline:none;
-    color:var(--paper);
-    font-family:'IBM Plex Mono', monospace;
-    font-size:14px;
-    padding:14px 16px;
-  }
-  .search-field input::placeholder{color:var(--ink-faint);}
-  .search-field::before{
-    content:"RECHERCHER_";
-    position:absolute;
-    top:-9px; left:12px;
-    background:var(--bg);
-    padding:0 6px;
-    font-size:10px;
-    letter-spacing:0.14em;
-    color:var(--ink-faint);
   }
 
   .filter-groups{
@@ -373,7 +377,7 @@
   .tag-pill.paid{color:var(--red); border-color:var(--red-dim);}
 
   .card h3{
-    font-family:'Space Mono', monospace;
+    font-family:'IBM Plex Mono', monospace;
     font-size:16px;
     font-weight:700;
     color:var(--paper);
@@ -386,18 +390,11 @@
     margin-bottom:14px;
     min-height:56px;
   }
+  a.card{display:block; color:inherit; text-decoration:none;}
   .card .card-footer{
-    display:flex; justify-content:space-between; align-items:center;
     border-top:1px solid var(--border);
     padding-top:12px;
   }
-  .card .open-link{
-    color:var(--red);
-    font-size:11.5px;
-    letter-spacing:0.08em;
-  }
-  .card .open-link::after{content:" →";}
-  .card .open-link:hover{text-decoration:underline;}
   .card .sub-cat{
     color:var(--ink-faint);
     font-size:10.5px;
@@ -417,7 +414,7 @@
     font-size:13px;
     letter-spacing:0.06em;
   }
-  .loading .cursor{background:var(--ink-dim);}
+  .loading .loading-cursor{color:var(--ink-dim);}
 
   footer{
     border-top:1px solid var(--border);
@@ -425,12 +422,16 @@
     color:var(--ink-faint);
     font-size:11px;
     letter-spacing:0.04em;
+    text-align:center;
   }
-  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;}
 
   @media (max-width: 640px){
-    .masthead-inner{gap:14px;}
-    .logo{width:42px; height:42px;}
+    .masthead{padding:32px 0 26px;}
+    .masthead-inner{gap:16px;}
+    .logo{height:52px;}
+    .mode-tabs-row{flex-direction:column; gap:0;}
+    .tabs-group{border-bottom:1px solid var(--border);}
+    .search-field-inline{border-left:none; max-width:none; padding:10px 0;}
     .mode-tab{padding:12px 14px; font-size:11px;}
     .path-item{flex-direction:column; gap:8px;}
     .path-item .step-num{width:auto; text-align:left;}
@@ -439,22 +440,31 @@
 </head>
 <body>
 
-<header class="masthead">
-  <div class="wrap masthead-inner">
-    <img src="logo.png" alt="OSINTrack" class="logo">
-    <div class="title-block">
-      <h1><span class="brand-osint">OSINT</span><span class="brand-track">rack</span><span class="cursor"></span></h1>
+<div class="site-header">
+  <header class="masthead">
+    <div class="wrap masthead-inner">
+      <img src="logo.png" alt="OSINTrack" class="logo">
+      <div class="title-block">
+        <h1><span class="brand-osint">OSINT</span><span class="brand-track">rack</span><span class="cursor">_</span></h1>
+      </div>
     </div>
-  </div>
-  <nav class="mode-tabs wrap" style="padding-left:0; padding-right:0;">
-    <button class="mode-tab active" data-mode="guided"><span class="num">01</span>Parcours guidé</button>
-    <button class="mode-tab" data-mode="explore"><span class="num">02</span>Explorer</button>
+  </header>
+  <nav class="mode-tabs-bar">
+    <div class="wrap mode-tabs-row">
+      <div class="tabs-group">
+        <button class="mode-tab active" data-mode="guided"><span class="num">01</span>Parcours guidé</button>
+        <button class="mode-tab" data-mode="explore"><span class="num">02</span>Explorer</button>
+      </div>
+      <div class="search-field-inline">
+        <input type="text" id="search-input" placeholder="Rechercher un outil...">
+      </div>
+    </div>
   </nav>
-</header>
+</div>
 
 <main class="wrap">
 
-  <div id="loading" class="loading">CHARGEMENT DES DONNÉES<span class="cursor"></span></div>
+  <div id="loading" class="loading">CHARGEMENT DES DONNÉES<span class="cursor loading-cursor">_</span></div>
 
   <!-- ============ MODE 1 : PARCOURS GUIDÉ ============ -->
   <section id="mode-guided" hidden>
@@ -472,9 +482,6 @@
   <!-- ============ MODE 2 : EXPLORER ============ -->
   <section id="mode-explore" hidden>
     <div class="explore-toolbar">
-      <div class="search-field">
-        <input type="text" id="search-input" placeholder="nom, description, mot-clé...">
-      </div>
       <div class="filter-groups">
         <div class="filter-group">
           <h3>Catégorie</h3>
@@ -507,8 +514,7 @@
 
 <footer>
   <div class="wrap">
-    <span>OSINTRACK — données synchronisées depuis Google Sheets</span>
-    <span>usage éducatif &amp; professionnel — vérifiez toujours la légalité de vos recherches</span>
+    OSINTrack — Usage éducatif &amp; professionnel — Restez dans la légalité © Auraponymous 2026
   </div>
 </footer>
 
@@ -678,7 +684,7 @@
     }
     grid.style.display = "grid";
     grid.innerHTML = results.map(o => `
-      <div class="card">
+      <a class="card" href="${escapeHtml(o.url)}" target="_blank" rel="noopener">
         <div class="rb1"></div><div class="rb2"></div>
         <div class="card-meta">
           <span class="tag-pill">${escapeHtml(o.categorie)}</span>
@@ -689,14 +695,16 @@
         <p class="desc">${escapeHtml(o.description)}</p>
         <div class="card-footer">
           <span class="sub-cat">${escapeHtml(o.sous_categorie)}</span>
-          <a class="open-link" href="${escapeHtml(o.url)}" target="_blank" rel="noopener">Ouvrir</a>
         </div>
-      </div>
+      </a>
     `).join("");
   }
 
   document.getElementById("search-input").addEventListener("input", (e) => {
     searchQuery = e.target.value;
+    if(searchQuery && !document.querySelector('.mode-tab[data-mode="explore"]').classList.contains("active")){
+      document.querySelector('.mode-tab[data-mode="explore"]').click();
+    }
     renderCards();
   });
 
